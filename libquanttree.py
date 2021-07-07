@@ -130,9 +130,9 @@ class Partitioning(ABC):
 class Statistic:
 
     def __init__(self, statistic_name: str = 'pearson', pi_values=None):
-        if statistic_name is 'pearson':
+        if statistic_name == 'pearson':
             self.statistic = pearson_statistic_
-        elif statistic_name is 'tv':
+        elif statistic_name == 'tv':
             self.statistic = tv_statistic_
         else:
             raise Exception("Invalid statistic name: {}".format(statistic_name))
@@ -741,7 +741,7 @@ class GaussianMixtureDataModel(DataModel):
 
     def __init__(self, ngauss):
         self.ngauss = ngauss
-        self.model = GaussianMixture(ngauss, 'tied')
+        self.model = GaussianMixture(ngauss) # covariance_type='tied' is outdated
         self.cov_inv = None
 
     def train_model(self, data: np.ndarray):
