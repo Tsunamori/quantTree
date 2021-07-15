@@ -435,13 +435,16 @@ class QuantTree(Partitioning):
         for i_leaf in range(nleaves):
             dim_split = int(self.leaves[0, i_leaf])
             # controllo se lo split e' stato fatto prendendo la coda destra o sinistra
+            # trans: check if the split was done by taking the left or right tail
             is_lower_split = box[0, dim_split, i_leaf] == self.leaves[1, i_leaf]
 
             # calcolo il box
+            # trans: calculate the box
             box[0, dim_split, i_leaf] = self.leaves[1, i_leaf]
             box[1, dim_split, i_leaf] = self.leaves[2, i_leaf]
 
             # aggiorno i limiti dei box successivi
+            # trans: update the limits of the following boxes
             if is_lower_split:
                 box[0, dim_split, i_leaf + 1:] = box[1, dim_split, i_leaf]
             else:
@@ -497,6 +500,7 @@ class QuantTreeUnivariate(QuantTree):
 
 class ParametricGaussianModel(DataModel):
     """Modello che implementa il two sample t-test per dati gaussiani multivariati"""
+    # trans: Model that implements the two sample t-test for multivariate Gaussian data
 
     def __init__(self):
         self.mu: np.ndarray = None
@@ -547,6 +551,7 @@ class BootstrapThresholdStrategy(ThresholdStrategy):
         return threshold
 
     # non necessario da implementare, ma solo se serve configurarla su un modello
+    # trans: not necessary to implement, but only if you need to configure it on a model
     def configure_strategy(self, model: DataModel, data: np.ndarray):
         self.model = model
         self.data = reshape_data(data)
@@ -645,6 +650,7 @@ class QuantTreeThresholdStrategy(ThresholdStrategy):
         ecdf = np.cumsum(counts) / nbatch
 
         # per ottenere il piu' piccolo threshold gamma tale per cui P(T > gamma) <= alpha basta fare
+        # trans: to get the smallest threshold gamma such that P (T> gamma) <= alpha just do
         # values[np.sum(ecdf < 1-alpha)]
 
         return values, ecdf
@@ -664,6 +670,7 @@ class QuantTreeThresholdStrategy(ThresholdStrategy):
         # histogram = Histogram(partitioning, self.statistic_name)
 
         # non utilizzo le API standard perche' sono troppo lente e in questo caso vogliamo essere molto piu' rapidi
+        # trans: I don't use the standard API because they are too slow and in this case we want to be much faster
         stats = np.zeros(nbatch)
         for i_batch in range(nbatch):
             if i_batch % 100 == 0:
@@ -704,6 +711,7 @@ class QuantTreeThresholdStrategy(ThresholdStrategy):
         return threshold
 
     # histogram deve essere basato su quanttree
+    # trans: histogram must be quanttree based
     def configure_strategy(self, histogram: Histogram, data: np.ndarray):
         if not isinstance(histogram.partitioning, QuantTree):
             ValueError('This strategy can be used only on histograms computed using QuantTree Partitioning')
